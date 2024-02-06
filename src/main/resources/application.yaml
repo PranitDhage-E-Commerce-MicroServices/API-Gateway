@@ -1,0 +1,37 @@
+#Tomcat server port number = 8080, context-path = /
+server:
+  port: 8083
+
+spring:
+  application:
+    name: API-GATEWAY
+# Route Configuration
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: USER-SERVICE
+            uri: lb://USER-SERVICE
+            predicates:
+              - Path=/user/**
+
+          - id: ADDRESS-SERVICE
+            uri: lb://ADDRESS-SERVICE
+            predicates:
+              - Path=/address/**
+
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
+
+#logging.level.org.springframework.orm.hibernate5=DEBUG
+logging:
+  file:
+    name: "logs/app.log"
+    path: "."
+  pattern:
+    level: "[%-5level] %logger{36}.%M.[%line]"
+    dateformat: "yyyy-MM-dd HH:mm:ss"
+    correlation: "[%X{reqId}] - "
+
