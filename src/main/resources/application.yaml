@@ -5,20 +5,27 @@ server:
 spring:
   application:
     name: API-GATEWAY
+  main:
+    allow-circular-references: true
 # Route Configuration
   cloud:
     gateway:
-      mvc:
-        routes:
-          - id: USER-SERVICE
-            uri: lb://USER-SERVICE
-            predicates:
-              - Path=/user/**
+      routes:
+        - id: USER-SERVICE
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user/*, /auth/*
+            - Method=GET,POST,PUT,DELETE,PATCH
+          filters:
+            - AuthenticationFilter
 
-          - id: ADDRESS-SERVICE
-            uri: lb://ADDRESS-SERVICE
-            predicates:
-              - Path=/address/**
+        - id: ADDRESS-SERVICE
+          uri: lb://ADDRESS-SERVICE
+          predicates:
+            - Path=/address/*
+            - Method=GET,POST,PUT,DELETE,PATCH
+          filters:
+            - AuthenticationFilter
 
 #eureka:
 #  client:
@@ -34,4 +41,12 @@ logging:
     level: "[%-5level] %logger{36}.%M.[%line]"
     dateformat: "yyyy-MM-dd HH:mm:ss"
     correlation: "[%X{reqId}] - "
+
+application:
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days
 

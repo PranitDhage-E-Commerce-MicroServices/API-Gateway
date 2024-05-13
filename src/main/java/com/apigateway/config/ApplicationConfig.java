@@ -1,16 +1,19 @@
 package com.apigateway.config;
 
+import io.netty.resolver.DefaultAddressResolverGroup;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.HandlerExceptionResolver;
+import reactor.netty.http.client.HttpClient;
 
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    @Autowired
-    @Qualifier("handlerExceptionResolver")
-    private HandlerExceptionResolver exceptionResolver;
+    @Bean
+    @LoadBalanced
+    public HttpClient webClient() {
+        return HttpClient.create().resolver(DefaultAddressResolverGroup.INSTANCE);
+    }
 }
