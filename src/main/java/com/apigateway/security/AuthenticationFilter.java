@@ -4,6 +4,7 @@ import com.apigateway.exceptions.AuthenticationException;
 import com.apigateway.service.IUserClient;
 import com.apigateway.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -41,6 +42,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     authHeader = authHeader.substring(7);
                 }
                 try {
+                    MDC.put(Constants.TOKEN_HEADER, Constants.TOKEN_PREFIX + authHeader);
                     // REST call to AUTH service
 //                    Boolean validJwt = userClient.validateJwt(authHeader);
                     jwtService.validateToken(authHeader);
