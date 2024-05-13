@@ -1,6 +1,9 @@
 package com.apigateway.security;
 
+import com.apigateway.exceptions.AuthenticationException;
 import com.apigateway.service.IUserClient;
+import com.apigateway.utils.Constants;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -8,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
 
     @Autowired
@@ -38,12 +42,12 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 }
                 try {
 //                    //REST call to AUTH service
-                    Boolean validJwt = userClient.validateJwt(authHeader);
+//                    Boolean validJwt = userClient.validateJwt(authHeader);
                     jwtService.validateToken(authHeader);
 
                 } catch (Exception e) {
-                    System.out.println("invalid access...!");
-                    throw new RuntimeException("un authorized access to application");
+                    log.info("invalid access...! - {}", e.getMessage());
+                    throw new AuthenticationException("Unauthorized Access to Application", Constants.ERR_AUTHENTICATION);
                 }
             }
             return chain.filter(exchange);

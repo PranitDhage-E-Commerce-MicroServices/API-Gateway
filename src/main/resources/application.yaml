@@ -10,23 +10,33 @@ spring:
 # Route Configuration
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
       routes:
         - id: USER-SERVICE
-          uri: lb://USER-SERVICE
+          uri: lb://USER-SERVICE/
           predicates:
-            - Path=/user/*, /auth/*
+            - Path=/user/**, /auth/
             - Method=GET,POST,PUT,DELETE,PATCH
           filters:
             - AuthenticationFilter
 
         - id: ADDRESS-SERVICE
-          uri: lb://ADDRESS-SERVICE
+          uri: lb://ADDRESS-SERVICE/
           predicates:
-            - Path=/address/*
+            - Path=/address/**
             - Method=GET,POST,PUT,DELETE,PATCH
           filters:
             - AuthenticationFilter
-
+#
+#      discovery:
+#        locator:
+#          enabled: true
+#          lowerCaseServiceId: true
 #eureka:
 #  client:
 #    service-url:
@@ -41,6 +51,12 @@ logging:
     level: "[%-5level] %logger{36}.%M.[%line]"
     dateformat: "yyyy-MM-dd HH:mm:ss"
     correlation: "[%X{reqId}] - "
+  level:
+    org:
+      springframework:
+        cloud.gateway: TRACE
+        http.server.reactive: DEBUG
+        web.reactive: DEBUG
 
 application:
   security:
