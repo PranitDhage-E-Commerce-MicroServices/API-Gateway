@@ -41,7 +41,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     authHeader = authHeader.substring(7);
                 }
                 try {
-//                    //REST call to AUTH service
+                    // REST call to AUTH service
 //                    Boolean validJwt = userClient.validateJwt(authHeader);
                     jwtService.validateToken(authHeader);
 
