@@ -27,7 +27,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {
             Exception.class,
             ResourceNotFoundException.class,
-            AuthenticationException.class,
             java.security.SignatureException.class,
             UnexpectedErrorException.class,
             IOException.class,
@@ -50,13 +49,6 @@ public class GlobalExceptionHandler {
             return new ResponseEntity<>(
                     new APIResponseEntity<>(
                             Constants.STATUS_ERROR, e.getMessage(), Constants.ERR_AUTHORIZATION, getReqId(request)
-                    ),
-                    HttpStatus.OK
-            );
-        } else if (e instanceof AuthenticationException) {
-            return new ResponseEntity<>(
-                    new APIResponseEntity<>(
-                            Constants.STATUS_ERROR, e.getMessage(), ((AuthenticationException) e).getCode(), getReqId(request)
                     ),
                     HttpStatus.OK
             );
@@ -101,7 +93,7 @@ public class GlobalExceptionHandler {
                     ),
                     HttpStatus.OK
             );
-        } else  {
+        } else {
             return new ResponseEntity<>(
                     new APIResponseEntity<>(
                             Constants.STATUS_ERROR, e.getMessage(), Constants.ERR_EXCEPTION, getReqId(request)
@@ -110,11 +102,23 @@ public class GlobalExceptionHandler {
         }
     }
 
+    @ExceptionHandler(value = {AuthenticationException.class})
+    public ResponseEntity<?> handleException(AuthenticationException e) {
+
+        logError(e);
+        return new ResponseEntity<>(
+                new APIResponseEntity<>(
+                        Constants.STATUS_ERROR, e.getMessage(), Constants.ERR_AUTHENTICATION, null
+                ),
+                HttpStatus.OK);
+    }
+
     private static String getReqId(WebRequest request) {
         String reqId = request.getHeader(Constants.REQ_ID_KEY);
         if (APIUtil.isEmpty(reqId)) {
             reqId = MDC.get(Constants.REQ_ID_KEY);
         }
+        MDC.clear();
         return reqId;
     }
 

@@ -39,10 +39,11 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
                 String authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
                 if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    MDC.put(Constants.TOKEN_HEADER, authHeader);
                     authHeader = authHeader.substring(7);
                 }
                 try {
-                    MDC.put(Constants.TOKEN_HEADER, Constants.TOKEN_PREFIX + authHeader);
+
                     // REST call to AUTH service
 //                    Boolean validJwt = userClient.validateJwt(authHeader);
                     jwtService.validateToken(authHeader);
